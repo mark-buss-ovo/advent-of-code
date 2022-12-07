@@ -25,7 +25,7 @@ object Day1 {
   }
 
   def part1: Int = {
-    getCounts.sorted.last
+    getCounts.max
   }
 
   def part2: Int = {
