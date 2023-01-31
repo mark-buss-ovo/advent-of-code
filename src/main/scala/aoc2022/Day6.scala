@@ -17,7 +17,7 @@ object Day6 {
   private def getIndexAfterUniqueChars(
       input: String,
       numberOfUniqueChars: Int,
-      index: Int
+      index: Int = 0
   ): Int = {
     val checkChars = input.slice(index, index + numberOfUniqueChars)
     if (checkChars.distinct.length == checkChars.length)
@@ -26,11 +26,11 @@ object Day6 {
       getIndexAfterUniqueChars(input, numberOfUniqueChars, index + 1)
   }
   private def getPacketStartIndex(input: String): Int = {
-    getIndexAfterUniqueChars(input, 4, 0)
+    getIndexAfterUniqueChars(input, 4)
   }
 
   private def getMessageStartIndex(input: String): Int = {
-    getIndexAfterUniqueChars(input, 14, 0)
+    getIndexAfterUniqueChars(input, 14)
   }
 
   def main(args: Array[String]): Unit = {
