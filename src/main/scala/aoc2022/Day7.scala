@@ -5,21 +5,47 @@ import scala.io.Source
 
 object Day7 {
 
-  val filenamePart1Sample = "2022/Day7/part1-sample.txt"
-  val filenamePart1Input = "2022/Day7/part1-input.txt"
+  private val filenamePart1Sample = "2022/Day7/part1-sample.txt"
+  private val filenamePart1Input = "2022/Day7/part1-input.txt"
 
-  sealed trait FileSystemItem {
-    val size: Int
-  }
+  private case class File(name: String, size: Int)
 
-  case class File(name: String, size: Int) extends FileSystemItem
-
-  case class Directory(
+  private case class Directory(
       name: String,
       files: Vector[File],
       subDirs: Vector[Directory]
-  ) extends FileSystemItem {
-    override val size: Int = files.map(_.size).sum + subDirs.map(_.size).sum
+  ) {
+    val size: Int = files.map(_.size).sum + subDirs.map(_.size).sum
+
+    private def addToSubDirsIfMissing(subDirName: String): Vector[Directory] = {
+      subDirs.find(_.name == subDirName) match {
+        case Some(_) => subDirs
+        case None =>
+          subDirs.appended(
+            Directory(
+              subDirName,
+              Vector.empty[File],
+              Vector.empty[Directory]
+            )
+          )
+      }
+    }
+
+    private def addFilesToSubDir(
+        subDirName: String,
+        restOfPath: String,
+        filesToAdd: Vector[File]
+    ): Directory = {
+      val newSubDirs = addToSubDirsIfMissing(subDirName)
+
+      copy(subDirs =
+        newSubDirs.map(d =>
+          if (d.name == subDirName) {
+            d.addFiles(restOfPath, filesToAdd)
+          } else d
+        )
+      )
+    }
 
     def addFiles(path: String, filesToAdd: Vector[File]): Directory = {
       val pathWithoutLeadingSlash =
@@ -36,46 +62,10 @@ object Day7 {
               pathWithoutLeadingSlash.indexOf('/')
             )
 
-          val newSubDirs = subDirs.find(_.name == subDirName) match {
-            case Some(_) => subDirs
-            case None =>
-              subDirs.appended(
-                Directory(
-                  subDirName,
-                  Vector.empty[File],
-                  Vector.empty[Directory]
-                )
-              )
-          }
-
-          copy(subDirs =
-            newSubDirs.map(d =>
-              if (d.name == subDirName) {
-                d.addFiles(restOfPath, filesToAdd)
-              } else d
-            )
-          )
+          addFilesToSubDir(subDirName, restOfPath, filesToAdd)
         case _ =>
           // last dir in the path, so find or add it and add files to it
-          val newDirs = subDirs.find(_.name == pathWithoutLeadingSlash) match {
-            case Some(_) => subDirs
-            case None =>
-              subDirs.appended(
-                Directory(
-                  pathWithoutLeadingSlash,
-                  Vector.empty[File],
-                  Vector.empty[Directory]
-                )
-              )
-          }
-          copy(subDirs =
-            newDirs.map(d =>
-              if (d.name == pathWithoutLeadingSlash)
-                d.addFiles("", filesToAdd)
-              else
-                d
-            )
-          )
+          addFilesToSubDir(pathWithoutLeadingSlash, "", filesToAdd)
       }
     }
   }
@@ -83,7 +73,7 @@ object Day7 {
   private val commandChangeDir = "$ cd "
   private val commandListContents = "$ ls"
 
-  def parseInput(filename: String): Directory = {
+  private def parseInput(filename: String): Directory = {
     val lines = Source.fromResource(filename).getLines().toVector
 
     @tailrec
@@ -156,7 +146,8 @@ object Day7 {
     )
   }
 
-  def getTotalSizeOfDirsUpToLimit(rootDir: Directory): Int = {
+  private def getTotalSizeOfDirsUpToLimit(filename: String): Int = {
+    val rootDir = parseInput(filename)
     val limit = 100000
     def getSizeIfSmallEnough(dirs: Vector[Directory]): Int = {
       dirs.foldLeft(0)((accSize, dir) => {
@@ -171,7 +162,8 @@ object Day7 {
     getSizeIfSmallEnough(rootDir.subDirs)
   }
 
-  def getSizeOfDirectoryToDelete(rootDir: Directory): Int = {
+  private def getSizeOfDirectoryToDelete(filename: String): Int = {
+    val rootDir = parseInput(filename)
     val totalDiskSpace = 70000000
     val requiredFreeSpace = 30000000
     val currentlyUnusedSpace = totalDiskSpace - rootDir.size
@@ -190,9 +182,9 @@ object Day7 {
   }
 
   def main(args: Array[String]): Unit = {
-    val rootDir = parseInput(filenamePart1Input)
-
-    println(getTotalSizeOfDirsUpToLimit(rootDir))
-    println(getSizeOfDirectoryToDelete(rootDir))
+    println(getTotalSizeOfDirsUpToLimit(filenamePart1Sample))
+    println(getTotalSizeOfDirsUpToLimit(filenamePart1Input))
+    println(getSizeOfDirectoryToDelete(filenamePart1Sample))
+    println(getSizeOfDirectoryToDelete(filenamePart1Input))
   }
 }
