@@ -3,9 +3,9 @@ package aoc2020
 import scala.annotation.tailrec
 import scala.io.Source
 
-object Day7 {
-  val filenamePart1Sample = "2020/Day7/part1-sample.txt"
-  val filenamePart1Input = "2020/Day7/part1-input.txt"
+object Day8 {
+  val filenamePart1Sample = "2020/Day8/part1-sample.txt"
+  val filenamePart1Input = "2020/Day8/part1-input.txt"
 
   sealed trait Instruction
 
