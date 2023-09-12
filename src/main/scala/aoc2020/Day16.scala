@@ -13,26 +13,22 @@ object Day16 {
       firstRange: Range,
       secondRange: Range
   ) {
+    def contains(value: Long): Boolean = {
+      firstRange.contains(value) || secondRange.contains(value)
+    }
+
     def containsAll(values: List[Long]): Boolean = {
-      values.forall(v => firstRange.contains(v) || secondRange.contains(v))
+      values.forall(contains)
     }
   }
 
   private case class Ticket(fields: List[Long]) {
     def invalidFields(fieldSpecs: List[FieldSpec]): List[Long] = {
-      fields.filter(f =>
-        !fieldSpecs.exists(s =>
-          s.firstRange.contains(f) || s.secondRange.contains(f)
-        )
-      )
+      fields.filter(f => !fieldSpecs.exists(s => s.contains(f)))
     }
 
     def isInvalid(fieldSpecs: List[FieldSpec]): Boolean = {
-      fields.exists(f =>
-        !fieldSpecs.exists(s =>
-          s.firstRange.contains(f) || s.secondRange.contains(f)
-        )
-      )
+      fields.exists(f => !fieldSpecs.exists(s => s.contains(f)))
     }
   }
 
@@ -166,7 +162,5 @@ object Day16 {
     println(calculateTicketScanningErrorRate(filenamePart1Input))
     println(calculateDepartureFieldsProduct(filenamePart1Sample))
     println(calculateDepartureFieldsProduct(filenamePart1Input))
-
   }
-
 }
