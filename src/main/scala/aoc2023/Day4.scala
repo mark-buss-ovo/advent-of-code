@@ -12,20 +12,18 @@ object Day4 {
       myNumbers: List[Int]
   ) {
     private val winningNumberCount: Int =
-      myNumbers.count(winningNumbers.contains(_))
+      winningNumbers.intersect(myNumbers).size
 
-    val score: Int = {
+    val score: Int =
       if (winningNumberCount > 0) {
         Integer.parseInt(
           s"1${"0" * (winningNumberCount - 1)}",
           2
         )
       } else 0
-    }
 
-    val copyNumbers: List[Int] = {
+    val copyNumbers: List[Int] =
       (number until number + winningNumberCount).map(_ + 1).toList
-    }
   }
 
   private def parseCards(filename: String): List[ScratchCard] = {
