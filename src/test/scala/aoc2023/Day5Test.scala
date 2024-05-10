@@ -6,7 +6,7 @@ import org.scalatest.matchers.should.Matchers
 
 class Day5Test extends AnyFunSuite with Matchers {
 
-  test("getNextWindows should return empty list if no overlap") {
+  test("getNextWindows should return None if no overlap") {
     val sutWindow = Window(10, 20, 30, 40)
     val nextWindow = sutWindow.getNextWindow(0, 9)
     nextWindow shouldBe None
@@ -40,7 +40,7 @@ class Day5Test extends AnyFunSuite with Matchers {
   }
 
   test(
-    "getNextWindows should return correct windows when source window completely contained"
+    "getNextWindows should return correct window when source window completely contained"
   ) {
     val sutWindow = Window(10, 20, 30, 40)
     val expectedWindow = (31, 39)
