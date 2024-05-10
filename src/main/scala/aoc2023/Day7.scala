@@ -107,10 +107,7 @@ object Day7 {
     }.sum
   }
 
-  private val cardValuesPart2: Map[Char, Int] = (2 to 9)
-    .map(i => s"$i".head -> i)
-    .appendedAll(Map('T' -> 10, 'J' -> 1, 'Q' -> 12, 'K' -> 13, 'A' -> 14))
-    .toMap
+  private val cardValuesPart2: Map[Char, Int] = cardValuesPart1.updated('J', 1)
 
   private case class HandPart2(cards: String) extends Hand {
     override val `type`: HandType = {
